@@ -1,4 +1,8 @@
-const TodoIconSvg = () => {
+type TodoIconSvgProps = {
+  color?: string;
+};
+
+const TodoIconSvg = ({ color = "#222222" }: TodoIconSvgProps) => {
   return (
     <svg
       width="21"
@@ -11,29 +15,29 @@ const TodoIconSvg = () => {
         cx="6.46154"
         cy="6.46154"
         r="6.46154"
-        fill={"#222222"}
-        fillOpacity={"0.9"}
+        fill={color}
+        fillOpacity="0.9"
       />
       <circle
         cx="6.46154"
         cy="14.5387"
         r="6.46154"
-        fill={"#222222"}
-        fillOpacity={"0.9"}
+        fill={color}
+        fillOpacity="0.9"
       />
       <circle
         cx="14.5387"
         cy="14.5387"
         r="6.46154"
-        fill={"#222222"}
-        fillOpacity={"0.9"}
+        fill={color}
+        fillOpacity="0.9"
       />
       <circle
         cx="14.5387"
         cy="6.46154"
         r="6.46154"
-        fill={"#222222"}
-        fillOpacity={"0.9"}
+        fill={color}
+        fillOpacity="0.9"
       />
     </svg>
   );

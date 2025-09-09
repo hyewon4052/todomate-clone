@@ -5,6 +5,7 @@ import { atom, useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import TodoIcon from "./TodoIconSvg";
 import { Sheet } from "react-modal-sheet";
+import "../index.css";
 
 export type Todo = {
   id: number;
@@ -98,7 +99,7 @@ const TodoList = () => {
         {todoList.map((todo) => (
           <div css={TodoItemRow} key={todo.id}>
             <button css={todoBtnBox} onClick={() => changeDoneItem(todo.id)}>
-              <TodoIcon />
+              <TodoIcon color={todo.isdone ? "#63c3c9" : "#222222"} />
             </button>
             {todo.text}
             <Ellipsis cursor={"pointer"} onClick={() => setModalOpen(true)} />
