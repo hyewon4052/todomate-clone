@@ -10,6 +10,7 @@ export type Todo = {
   id: number;
   text: string;
   date: Date;
+  isdone: boolean;
 };
 
 const inputValueAtom = atom("");
@@ -33,6 +34,7 @@ const TodoList = () => {
         id: todoList.length + 1,
         text: inputValue,
         date: new Date(),
+        isdone: false,
       };
       setTodoList([...todoList, newTodo]);
       setInputValue("");
@@ -42,6 +44,15 @@ const TodoList = () => {
   function deleteItem(id: number) {
     const updateTodoList = todoList.filter((todo) => todo.id !== id);
     setTodoList(updateTodoList);
+  }
+
+  function changeDoneItem(id: number) {
+    const updatedTodoList = todoList.map((todo) =>
+      todo.id === id && todo.isdone === false
+        ? { ...todo, isdone: true }
+        : { ...todo, isdone: false }
+    );
+    setTodoList(updatedTodoList);
   }
 
   return (
@@ -86,7 +97,9 @@ const TodoList = () => {
       <div css={TodoListCol}>
         {todoList.map((todo) => (
           <div css={TodoItemRow} key={todo.id}>
-            <TodoIcon />
+            <button css={todoBtnBox} onClick={() => changeDoneItem(todo.id)}>
+              <TodoIcon />
+            </button>
             {todo.text}
             <Ellipsis cursor={"pointer"} onClick={() => setModalOpen(true)} />
             <Sheet isOpen={modalOpen} onClose={() => setModalOpen(false)}>
@@ -125,6 +138,14 @@ const TodoList = () => {
   );
 };
 
+const todoBtnBox = css`
+  padding: 0;
+  background-color: rgba(0, 0, 0, 0);
+  height: 21px;
+  width: 21px;
+  cursor: pointer;
+`;
+
 const ModalItem = css`
   display: flex;
   flex-direction: column;
@@ -159,6 +180,7 @@ const ModalBox = css`
 const TodoItemRow = css`
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 10px;
 `;
 
@@ -199,4 +221,5 @@ const TodoListBox = css`
   flex-direction: column;
   margin-left: 20px;
 `;
+
 export default TodoList;
