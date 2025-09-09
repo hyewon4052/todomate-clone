@@ -94,46 +94,53 @@ const TodoList = () => {
           />
         </div>
       )}
-
       <div css={TodoListCol}>
-        {todoList.map((todo) => (
-          <div css={TodoItemRow} key={todo.id}>
-            <button css={todoBtnBox} onClick={() => changeDoneItem(todo.id)}>
-              <TodoIcon color={todo.isdone ? "#63c3c9" : "#222222"} />
-            </button>
-            {todo.text}
-            <Ellipsis cursor={"pointer"} onClick={() => setModalOpen(true)} />
-            <Sheet isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-              <Sheet.Container
-                style={{
-                  left: "25%",
-                  transform: "translate(-50%, -50%)",
-                  width: "50%",
-                  height: "100%",
-                  backgroundColor: "#222222",
-                }}
-              >
-                <Sheet.Header />
-                <Sheet.Content>
-                  <div css={ModalBox}>
-                    <span>{todo.text}</span>
-                    <div css={ModalItemBox}>
-                      <div css={ModalItem}>
-                        <SquarePen />
-                        Edit
-                      </div>
-                      <div css={ModalItem} onClick={() => deleteItem(todo.id)}>
-                        <Trash />
-                        Delete
+        {todoList
+          .sort((a, b) => {
+            if (a.isdone === b.isdone) return 0;
+            return a.isdone ? 1 : -1;
+          })
+          .map((todo) => (
+            <div css={TodoItemRow} key={todo.id}>
+              <button css={todoBtnBox} onClick={() => changeDoneItem(todo.id)}>
+                <TodoIcon color={todo.isdone ? "#63c3c9" : "#222222"} />
+              </button>
+              {todo.text}
+              <Ellipsis cursor={"pointer"} onClick={() => setModalOpen(true)} />
+              <Sheet isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+                <Sheet.Container
+                  style={{
+                    left: "25%",
+                    transform: "translate(-50%, -50%)",
+                    width: "50%",
+                    height: "100%",
+                    backgroundColor: "#222222",
+                  }}
+                >
+                  <Sheet.Header />
+                  <Sheet.Content>
+                    <div css={ModalBox}>
+                      <span>{todo.text}</span>
+                      <div css={ModalItemBox}>
+                        <div css={ModalItem}>
+                          <SquarePen />
+                          Edit
+                        </div>
+                        <div
+                          css={ModalItem}
+                          onClick={() => deleteItem(todo.id)}
+                        >
+                          <Trash />
+                          Delete
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Sheet.Content>
-              </Sheet.Container>
-              <Sheet.Backdrop />
-            </Sheet>
-          </div>
-        ))}
+                  </Sheet.Content>
+                </Sheet.Container>
+                <Sheet.Backdrop />
+              </Sheet>
+            </div>
+          ))}
       </div>
     </div>
   );
