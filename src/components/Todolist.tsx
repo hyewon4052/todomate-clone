@@ -20,15 +20,15 @@ export type Todo = {
 const inputValueAtom = atom("");
 export const todoListAtom = atomWithStorage<Todo[]>("todoList", []);
 const todoOpenBtnAtom = atom(false);
-const modalOpenBtnAtom = atom(false);
 export const monthDoneAtom = atom(0);
+const selectedTodoAtom = atom<Todo | null>(null);
 
 const TodoList = () => {
   const [selectedDate] = useAtom(selectedDateAtom);
   const [inputValue, setInputValue] = useAtom(inputValueAtom);
   const [todoList, setTodoList] = useAtom(todoListAtom);
   const [todoOpen, setTodoOpen] = useAtom(todoOpenBtnAtom);
-  const [modalOpen, setModalOpen] = useAtom(modalOpenBtnAtom);
+  const [selectedTodo, setSelectedTodo] = useAtom(selectedTodoAtom);
   const [, setMonthDone] = useAtom(monthDoneAtom);
 
   useEffect(() => {
@@ -61,6 +61,7 @@ const TodoList = () => {
   function deleteItem(id: number) {
     const updateTodoList = todoList.filter((todo) => todo.id !== id);
     setTodoList(updateTodoList);
+    setSelectedTodo(null);
   }
 
   function changeDoneItem(id: number) {
@@ -122,39 +123,47 @@ const TodoList = () => {
               <TodoIcon color={todo.isdone ? "#63c3c9" : "#222222"} />
             </button>
             {todo.text}
-            <Ellipsis cursor={"pointer"} onClick={() => setModalOpen(true)} />
-            <Sheet isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-              <Sheet.Container
-                style={{
-                  left: "25%",
-                  transform: "translate(-50%, -50%)",
-                  width: "50%",
-                  height: "100%",
-                  backgroundColor: "#222222",
-                }}
-              >
-                <Sheet.Header />
-                <Sheet.Content>
-                  <div css={ModalBox}>
-                    <span>{todo.text}</span>
-                    <div css={ModalItemBox}>
-                      <div css={ModalItem}>
-                        <SquarePen />
-                        Edit
-                      </div>
-                      <div css={ModalItem} onClick={() => deleteItem(todo.id)}>
-                        <Trash />
-                        Delete
-                      </div>
-                    </div>
-                  </div>
-                </Sheet.Content>
-              </Sheet.Container>
-              <Sheet.Backdrop />
-            </Sheet>
+            <Ellipsis
+              cursor={"pointer"}
+              onClick={() => setSelectedTodo(todo)}
+            />
           </div>
         ))}
       </div>
+      {selectedTodo && (
+        <Sheet isOpen={!!selectedTodo} onClose={() => setSelectedTodo(null)}>
+          <Sheet.Container
+            style={{
+              left: "25%",
+              transform: "translate(-50%, -50%)",
+              width: "50%",
+              height: "100%",
+              backgroundColor: "#222222",
+            }}
+          >
+            <Sheet.Header />
+            <Sheet.Content>
+              <div css={ModalBox}>
+                <span>{selectedTodo.text}</span>
+                <div css={ModalItemBox}>
+                  <div css={ModalItem}>
+                    <SquarePen />
+                    Edit
+                  </div>
+                  <div
+                    css={ModalItem}
+                    onClick={() => deleteItem(selectedTodo.id)}
+                  >
+                    <Trash />
+                    Delete
+                  </div>
+                </div>
+              </div>
+            </Sheet.Content>
+          </Sheet.Container>
+          <Sheet.Backdrop />
+        </Sheet>
+      )}
     </div>
   );
 };
