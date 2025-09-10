@@ -15,20 +15,28 @@ export type Todo = {
   text: string;
   date: Date;
   isdone: boolean;
+  categoryId: number;
 };
 
 const inputValueAtom = atom("");
 export const todoListAtom = atomWithStorage<Todo[]>("todoList", []);
-const todoOpenBtnAtom = atom(false);
 export const monthDoneAtom = atom(0);
 const selectedTodoAtom = atom<Todo | null>(null);
+const openCategoriesAtom = atom<Record<number, boolean>>({});
+
+const categories = [
+  { id: 1, name: "카테고리 1", color: "--category--01" },
+  { id: 2, name: "카테고리 2", color: "--category--02" },
+  { id: 3, name: "카테고리 3", color: "--category--03" },
+  { id: 4, name: "카테고리 4", color: "--category--04" },
+];
 
 const TodoList = () => {
   const [selectedDate] = useAtom(selectedDateAtom);
   const [inputValue, setInputValue] = useAtom(inputValueAtom);
   const [todoList, setTodoList] = useAtom(todoListAtom);
-  const [todoOpen, setTodoOpen] = useAtom(todoOpenBtnAtom);
   const [selectedTodo, setSelectedTodo] = useAtom(selectedTodoAtom);
+  const [openCategories, setOpenCategories] = useAtom(openCategoriesAtom);
   const [, setMonthDone] = useAtom(monthDoneAtom);
 
   useEffect(() => {
@@ -45,13 +53,14 @@ const TodoList = () => {
     setInputValue(e.target.value);
   }
 
-  function addItem() {
+  function addItem(categoryId: number) {
     if (inputValue.trim() !== "" && selectedDate) {
       const newTodo: Todo = {
         id: todoList.length + 1,
         text: inputValue,
         date: selectedDate.toDate(),
         isdone: false,
+        categoryId,
       };
       setTodoList([...todoList, newTodo]);
       setInputValue("");
@@ -71,65 +80,73 @@ const TodoList = () => {
     setTodoList(updatedTodoList);
   }
 
+  function toggleCategory(id: number) {
+    setOpenCategories((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  }
+
   const SelectedDateTodos = todoList.filter((todo) =>
     dayjs(todo.date).isSame(selectedDate, "day")
   );
 
   return (
-    <div css={TodoListBox}>
-      <div onClick={() => setTodoOpen(!todoOpen)} css={TodoTitle}>
-        <Earth width="17px" />
-        <span>카테고리 1</span>
-        <Plus width="17px" />
-      </div>
-      {todoOpen && (
-        <div
-          css={AddBtnBox}
-          tabIndex={-1}
-          onBlur={(e) => {
-            if (
-              !e.currentTarget.contains(e.relatedTarget) &&
-              inputValue.trim() !== ""
-            ) {
-              addItem();
-            }
-          }}
-        >
-          <TodoIcon />
-          <input
-            value={inputValue}
-            type="text"
-            onChange={onChangeValue}
-            placeholder="Input"
-            style={{
-              border: "none",
-              background: "transparent",
-              borderCollapse: "collapse",
-              borderBottom: "solid 1px #cacaca",
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") addItem();
-            }}
-          />
-        </div>
-      )}
-      <div css={TodoListCol}>
-        {SelectedDateTodos.sort((a, b) => {
-          if (a.isdone === b.isdone) return 0;
-          return a.isdone ? 1 : -1;
-        }).map((todo) => (
-          <div css={TodoItemRow} key={todo.id}>
-            <button css={todoBtnBox} onClick={() => changeDoneItem(todo.id)}>
-              <TodoIcon color={todo.isdone ? "#63c3c9" : "#222222"} />
-            </button>
-            {todo.text}
-            <Ellipsis
-              cursor={"pointer"}
-              onClick={() => setSelectedTodo(todo)}
-            />
+    <div>
+      {categories.map((c) => (
+        <div key={c.id} css={TodoListBox}>
+          <div
+            onClick={() => toggleCategory(c.id)}
+            css={css`
+              ${TodoTitle};
+              background-color: var(--main-gray);
+            `}
+          >
+            <Earth width="17px" />
+            <span style={{ color: c.color }}>{c.name}</span>
+            <Plus width="17px" />
           </div>
-        ))}
-      </div>
+
+          {openCategories[c.id] && (
+            <div css={AddBtnBox}>
+              <TodoIcon />
+              <input
+                value={inputValue}
+                onChange={onChangeValue}
+                placeholder="Input"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") addItem(c.id);
+                }}
+              />
+            </div>
+          )}
+
+          <div css={TodoListCol}>
+            {SelectedDateTodos.filter((todo) => todo.categoryId === c.id)
+              .sort((a, b) => (a.isdone === b.isdone ? 0 : a.isdone ? 1 : -1))
+              .map((todo) => (
+                <div css={TodoItemRow} key={todo.id}>
+                  <div>
+                    <button
+                      css={todoBtnBox}
+                      onClick={() => changeDoneItem(todo.id)}
+                    >
+                      <TodoIcon
+                        color={todo.isdone ? `var(${c.color})` : "#222222"}
+                      />
+                    </button>
+                    {todo.text}
+                  </div>
+                  <Ellipsis
+                    cursor="pointer"
+                    onClick={() => setSelectedTodo(todo)}
+                  />
+                </div>
+              ))}
+          </div>
+        </div>
+      ))}
+
       {selectedTodo && (
         <Sheet isOpen={!!selectedTodo} onClose={() => setSelectedTodo(null)}>
           <Sheet.Container
@@ -210,8 +227,13 @@ const ModalBox = css`
 const TodoItemRow = css`
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  > div {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
 `;
 
 const TodoListCol = css`
@@ -220,6 +242,7 @@ const TodoListCol = css`
   display: flex;
   flex-direction: column;
   gap: 14px;
+  margin-bottom: 10px;
 `;
 
 const AddBtnBox = css`
@@ -231,6 +254,7 @@ const AddBtnBox = css`
   align-items: center;
   gap: 20px;
 `;
+
 const TodoTitle = css`
   padding: 10px;
   display: flex;
@@ -239,15 +263,12 @@ const TodoTitle = css`
   align-items: center;
   gap: 10px;
   width: 120px;
-  height: 30px;
+  height: 25px;
   border-radius: 300px;
   background-color: #1c1c1c;
   text-align: center;
   font-weight: bold;
   font-size: 15px;
-  span {
-    color: #63c3c9;
-  }
 `;
 
 const TodoListBox = css`
