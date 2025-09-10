@@ -46,11 +46,11 @@ const TodoList = () => {
   }
 
   function addItem() {
-    if (inputValue.trim() !== "") {
+    if (inputValue.trim() !== "" && selectedDate) {
       const newTodo: Todo = {
         id: todoList.length + 1,
         text: inputValue,
-        date: new Date(),
+        date: selectedDate.toDate(),
         isdone: false,
       };
       setTodoList([...todoList, newTodo]);
