@@ -49,9 +49,7 @@ const TodoList = () => {
 
   function changeDoneItem(id: number) {
     const updatedTodoList = todoList.map((todo) =>
-      todo.id === id && todo.isdone === false
-        ? { ...todo, isdone: true }
-        : { ...todo, isdone: false }
+      todo.id === id ? { ...todo, isdone: !todo.isdone } : todo
     );
     setTodoList(updatedTodoList);
   }
