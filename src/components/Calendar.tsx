@@ -72,6 +72,10 @@ const Calendar = () => {
             (todo) => dayjs(todo.date).isSame(day, "day") && !todo.isdone
           ).length;
 
+          const dayOfWeek = day.day();
+          const dayColor =
+            dayOfWeek === 0 ? "red" : dayOfWeek === 6 ? "blue" : "white";
+
           return (
             <div
               key={day.toString()}
@@ -83,9 +87,9 @@ const Calendar = () => {
                 <TodoIcon />
               </div>
               {isSelected ? (
-                <div css={SelectedDate}>{day.date()}</div>
+                <div css={[SelectedDate, { color: "black" }]}>{day.date()}</div>
               ) : (
-                <div>{day.date()}</div>
+                <div style={{ color: dayColor }}>{day.date()}</div>
               )}
             </div>
           );
