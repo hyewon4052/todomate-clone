@@ -6,7 +6,7 @@ import { atom, useAtom } from "jotai";
 import TodoIcon from "./TodoIconSvg";
 
 const currentMonthAtom = atom(dayjs());
-const selectedDateAtom = atom<dayjs.Dayjs | null>(null);
+const selectedDateAtom = atom<dayjs.Dayjs>(dayjs());
 
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useAtom(currentMonthAtom);
