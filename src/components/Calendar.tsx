@@ -8,7 +8,7 @@ import "dayjs/locale/ko";
 import isoWeek from "dayjs/plugin/isoWeek";
 
 const currentMonthAtom = atom(dayjs());
-const selectedDateAtom = atom(dayjs());
+export const selectedDateAtom = atom(dayjs());
 
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useAtom(currentMonthAtom);
@@ -100,6 +100,9 @@ const CalendarHeader = css`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  span {
+    font-weight: 700;
+  }
 `;
 
 const CalendarGrid = css`

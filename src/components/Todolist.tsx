@@ -5,6 +5,8 @@ import { atom, useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import TodoIcon from "./TodoIconSvg";
 import { Sheet } from "react-modal-sheet";
+import { selectedDateAtom } from "./Calendar";
+import dayjs from "dayjs";
 import "../index.css";
 
 export type Todo = {
@@ -20,6 +22,7 @@ const todoOpenBtnAtom = atom(false);
 const modalOpenBtnAtom = atom(false);
 
 const TodoList = () => {
+  const [selectedDate] = useAtom(selectedDateAtom);
   const [inputValue, setInputValue] = useAtom(inputValueAtom);
   const [todoList, setTodoList] = useAtom(todoListAtom);
   const [todoOpen, setTodoOpen] = useAtom(todoOpenBtnAtom);
@@ -54,11 +57,15 @@ const TodoList = () => {
     setTodoList(updatedTodoList);
   }
 
+  const SelectedDateTodos = todoList.filter((todo) =>
+    dayjs(todo.date).isSame(selectedDate, "day")
+  );
+
   return (
     <div css={TodoListBox}>
       <div onClick={() => setTodoOpen(!todoOpen)} css={TodoTitle}>
         <Earth width="17px" />
-        오늘
+        <span>카테고리 1</span>
         <Plus width="17px" />
       </div>
       {todoOpen && (
@@ -93,52 +100,47 @@ const TodoList = () => {
         </div>
       )}
       <div css={TodoListCol}>
-        {todoList
-          .sort((a, b) => {
-            if (a.isdone === b.isdone) return 0;
-            return a.isdone ? 1 : -1;
-          })
-          .map((todo) => (
-            <div css={TodoItemRow} key={todo.id}>
-              <button css={todoBtnBox} onClick={() => changeDoneItem(todo.id)}>
-                <TodoIcon color={todo.isdone ? "#63c3c9" : "#222222"} />
-              </button>
-              {todo.text}
-              <Ellipsis cursor={"pointer"} onClick={() => setModalOpen(true)} />
-              <Sheet isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-                <Sheet.Container
-                  style={{
-                    left: "25%",
-                    transform: "translate(-50%, -50%)",
-                    width: "50%",
-                    height: "100%",
-                    backgroundColor: "#222222",
-                  }}
-                >
-                  <Sheet.Header />
-                  <Sheet.Content>
-                    <div css={ModalBox}>
-                      <span>{todo.text}</span>
-                      <div css={ModalItemBox}>
-                        <div css={ModalItem}>
-                          <SquarePen />
-                          Edit
-                        </div>
-                        <div
-                          css={ModalItem}
-                          onClick={() => deleteItem(todo.id)}
-                        >
-                          <Trash />
-                          Delete
-                        </div>
+        {SelectedDateTodos.sort((a, b) => {
+          if (a.isdone === b.isdone) return 0;
+          return a.isdone ? 1 : -1;
+        }).map((todo) => (
+          <div css={TodoItemRow} key={todo.id}>
+            <button css={todoBtnBox} onClick={() => changeDoneItem(todo.id)}>
+              <TodoIcon color={todo.isdone ? "#63c3c9" : "#222222"} />
+            </button>
+            {todo.text}
+            <Ellipsis cursor={"pointer"} onClick={() => setModalOpen(true)} />
+            <Sheet isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+              <Sheet.Container
+                style={{
+                  left: "25%",
+                  transform: "translate(-50%, -50%)",
+                  width: "50%",
+                  height: "100%",
+                  backgroundColor: "#222222",
+                }}
+              >
+                <Sheet.Header />
+                <Sheet.Content>
+                  <div css={ModalBox}>
+                    <span>{todo.text}</span>
+                    <div css={ModalItemBox}>
+                      <div css={ModalItem}>
+                        <SquarePen />
+                        Edit
+                      </div>
+                      <div css={ModalItem} onClick={() => deleteItem(todo.id)}>
+                        <Trash />
+                        Delete
                       </div>
                     </div>
-                  </Sheet.Content>
-                </Sheet.Container>
-                <Sheet.Backdrop />
-              </Sheet>
-            </div>
-          ))}
+                  </div>
+                </Sheet.Content>
+              </Sheet.Container>
+              <Sheet.Backdrop />
+            </Sheet>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -208,18 +210,22 @@ const AddBtnBox = css`
   gap: 20px;
 `;
 const TodoTitle = css`
+  padding: 10px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 10px;
   width: 120px;
-  height: 40px;
+  height: 30px;
   border-radius: 300px;
   background-color: #1c1c1c;
   text-align: center;
   font-weight: bold;
   font-size: 15px;
+  span {
+    color: #63c3c9;
+  }
 `;
 
 const TodoListBox = css`
