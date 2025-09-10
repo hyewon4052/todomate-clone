@@ -117,6 +117,9 @@ const TodoList = () => {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") addItem(c.id);
                 }}
+                style={{
+                  borderBottom: `solid 2px var(${c.color})`,
+                }}
               />
             </div>
           )}
@@ -255,6 +258,15 @@ const AddBtnBox = css`
   text-align: center;
   align-items: center;
   gap: 20px;
+  input {
+    border: 0;
+    border-style: none;
+    border-bottom: solid 1px #cacaca;
+    border-collapse: collapse;
+    width: 100%;
+    background-color: transparent;
+    outline: none;
+  }
 `;
 
 const TodoTitle = css`
