@@ -103,7 +103,7 @@ const TodoList = () => {
             `}
           >
             <Earth width="17px" />
-            <span style={{ color: c.color }}>{c.name}</span>
+            <span style={{ color: `var(${c.color})` }}>{c.name}</span>
             <Plus width="17px" />
           </div>
 
@@ -132,7 +132,9 @@ const TodoList = () => {
                       onClick={() => changeDoneItem(todo.id)}
                     >
                       <TodoIcon
-                        color={todo.isdone ? `var(${c.color})` : "#222222"}
+                        color={
+                          todo.isdone ? `var(${c.color})` : "var(--main-gray)"
+                        }
                       />
                     </button>
                     {todo.text}
@@ -155,7 +157,7 @@ const TodoList = () => {
               transform: "translate(-50%, -50%)",
               width: "50%",
               height: "100%",
-              backgroundColor: "#222222",
+              backgroundColor: "var(--main-gray)",
             }}
           >
             <Sheet.Header />
