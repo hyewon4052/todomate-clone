@@ -6,7 +6,7 @@ import { atom, useAtom } from "jotai";
 import TodoIcon from "./TodoIconSvg";
 import "dayjs/locale/ko";
 import isoWeek from "dayjs/plugin/isoWeek";
-import { monthDoneAtom } from "./Todolist";
+import { monthDoneAtom, todoListAtom } from "./Todolist";
 
 const currentMonthAtom = atom(dayjs());
 export const selectedDateAtom = atom(dayjs());
@@ -15,6 +15,7 @@ const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useAtom(currentMonthAtom);
   const [selectedDate, setSelectedDate] = useAtom(selectedDateAtom);
   const [monthDone] = useAtom(monthDoneAtom);
+  const [todoList] = useAtom(todoListAtom);
 
   dayjs.extend(isoWeek);
   const startOfMonth = currentMonth.startOf("month");
@@ -67,13 +68,20 @@ const Calendar = () => {
 
           if (!isCurrentMonth) return <div key={day.toString()}></div>;
 
+          const dayNotDone = todoList.filter(
+            (todo) => dayjs(todo.date).isSame(day, "day") && !todo.isdone
+          ).length;
+
           return (
             <div
               key={day.toString()}
               css={[DayCell, isToday && TodayCell]}
               onClick={() => setSelectedDate(day)}
             >
-              <TodoIcon />
+              <div css={TodoIconBox}>
+                {dayNotDone > 0 && <span>{dayNotDone}</span>}
+                <TodoIcon />
+              </div>
               {isSelected ? (
                 <div css={SelectedDate}>{day.date()}</div>
               ) : (
@@ -87,6 +95,15 @@ const Calendar = () => {
   );
 };
 
+const TodoIconBox = css`
+  position: relative;
+  span {
+    position: absolute;
+    display: flex;
+    left: 33%;
+    font-weight: 600;
+  }
+`;
 const SelectedDate = css`
   width: 17px;
   height: 17px;

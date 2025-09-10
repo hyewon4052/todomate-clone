@@ -18,7 +18,7 @@ export type Todo = {
 };
 
 const inputValueAtom = atom("");
-const todoListAtom = atomWithStorage<Todo[]>("todoList", []);
+export const todoListAtom = atomWithStorage<Todo[]>("todoList", []);
 const todoOpenBtnAtom = atom(false);
 const modalOpenBtnAtom = atom(false);
 export const monthDoneAtom = atom(0);
