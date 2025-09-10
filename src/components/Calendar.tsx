@@ -4,17 +4,20 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import dayjs from "dayjs";
 import { atom, useAtom } from "jotai";
 import TodoIcon from "./TodoIconSvg";
+import "dayjs/locale/ko";
+import isoWeek from "dayjs/plugin/isoWeek";
 
 const currentMonthAtom = atom(dayjs());
-const selectedDateAtom = atom<dayjs.Dayjs>(dayjs());
+const selectedDateAtom = atom(dayjs());
 
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useAtom(currentMonthAtom);
   const [selectedDate, setSelectedDate] = useAtom(selectedDateAtom);
 
+  dayjs.extend(isoWeek);
   const startOfMonth = currentMonth.startOf("month");
   const endOfMonth = currentMonth.endOf("month");
-  const startDate = startOfMonth.startOf("week");
+  const startDate = startOfMonth.startOf("isoWeek");
   const endDate = endOfMonth.endOf("week");
 
   const days: dayjs.Dayjs[] = [];
@@ -46,15 +49,17 @@ const Calendar = () => {
         </div>
       </div>
       <div css={CalendarGrid}>
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-          <div css={DayHeader}>{d}</div>
+        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+          <div css={DayHeader} key={d}>
+            {d}
+          </div>
         ))}
         {days.map((day) => {
           const isCurrentMonth = day.month() === currentMonth.month();
           const isToday = day.isSame(dayjs(), "day");
           const isSelected = selectedDate?.isSame(day, "day");
 
-          if (!isCurrentMonth) return <div></div>;
+          if (!isCurrentMonth) return <div key={day.toString()}></div>;
 
           return (
             <div
