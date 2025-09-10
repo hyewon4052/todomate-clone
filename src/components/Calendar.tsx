@@ -54,13 +54,12 @@ const Calendar = () => {
           const isToday = day.isSame(dayjs(), "day");
           const isSelected = selectedDate?.isSame(day, "day");
 
+          if (!isCurrentMonth) return <div></div>;
+
           return (
             <div
-              css={[
-                DayCell,
-                !isCurrentMonth && NotCurrentMonth,
-                isToday && TodayCell,
-              ]}
+              key={day.toString()}
+              css={[DayCell, isToday && TodayCell]}
               onClick={() => setSelectedDate(day)}
             >
               <TodoIcon />
@@ -72,6 +71,7 @@ const Calendar = () => {
             </div>
           );
         })}
+        ;
       </div>
     </div>
   );
@@ -120,10 +120,6 @@ const DayCell = css`
   justify-content: center;
   gap: 10px;
   font-size: 12px;
-`;
-
-const NotCurrentMonth = css`
-  color: #555;
 `;
 
 const TodayCell = css`
