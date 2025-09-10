@@ -7,6 +7,7 @@ import TodoIcon from "./TodoIconSvg";
 import { Sheet } from "react-modal-sheet";
 import { selectedDateAtom } from "./Calendar";
 import dayjs from "dayjs";
+import { useEffect } from "react";
 import "../index.css";
 
 export type Todo = {
@@ -20,6 +21,7 @@ const inputValueAtom = atom("");
 const todoListAtom = atomWithStorage<Todo[]>("todoList", []);
 const todoOpenBtnAtom = atom(false);
 const modalOpenBtnAtom = atom(false);
+export const monthDoneAtom = atom(0);
 
 const TodoList = () => {
   const [selectedDate] = useAtom(selectedDateAtom);
@@ -27,6 +29,17 @@ const TodoList = () => {
   const [todoList, setTodoList] = useAtom(todoListAtom);
   const [todoOpen, setTodoOpen] = useAtom(todoOpenBtnAtom);
   const [modalOpen, setModalOpen] = useAtom(modalOpenBtnAtom);
+  const [, setMonthDone] = useAtom(monthDoneAtom);
+
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const doneCount = todoList.filter(
+      (todo) => dayjs(todo.date).isSame(selectedDate, "month") && todo.isdone
+    ).length;
+
+    setMonthDone(doneCount);
+  }, [todoList, selectedDate, setMonthDone]);
 
   function onChangeValue(e: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(e.target.value);

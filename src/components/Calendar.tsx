@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, BadgeCheck } from "lucide-react";
 import dayjs from "dayjs";
 import { atom, useAtom } from "jotai";
 import TodoIcon from "./TodoIconSvg";
 import "dayjs/locale/ko";
 import isoWeek from "dayjs/plugin/isoWeek";
+import { monthDoneAtom } from "./Todolist";
 
 const currentMonthAtom = atom(dayjs());
 export const selectedDateAtom = atom(dayjs());
@@ -13,6 +14,7 @@ export const selectedDateAtom = atom(dayjs());
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useAtom(currentMonthAtom);
   const [selectedDate, setSelectedDate] = useAtom(selectedDateAtom);
+  const [monthDone] = useAtom(monthDoneAtom);
 
   dayjs.extend(isoWeek);
   const startOfMonth = currentMonth.startOf("month");
@@ -34,7 +36,11 @@ const Calendar = () => {
   return (
     <div css={CalendarBox}>
       <div css={CalendarHeader}>
-        <span>{currentMonth.format("MMM YYYY")}</span>
+        <div css={CountBox}>
+          <span>{currentMonth.format("MMM YYYY")}</span>
+          <BadgeCheck width="18px" />
+          <span>{monthDone}</span>
+        </div>
         <div css={CalendarBtnBox}>
           <ChevronLeft
             onClick={handlePrevMonth}
@@ -132,6 +138,14 @@ const DayCell = css`
 const TodayCell = css`
   color: #fff;
   font-weight: bold;
+`;
+
+const CountBox = css`
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
 `;
 
 export default Calendar;
