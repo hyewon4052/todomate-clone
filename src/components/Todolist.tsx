@@ -40,7 +40,6 @@ const TodoList = () => {
   const [openCategory, setOpenCategory] = useAtom(openCategoryAtom);
   const [, setMonthDone] = useAtom(monthDoneAtom);
   const inputBoxRef = useRef<HTMLInputElement | null>(null);
-  const todoListRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!selectedDate) return;
@@ -55,8 +54,8 @@ const TodoList = () => {
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (
-        todoListRef.current &&
-        !todoListRef.current.contains(e.target as Node)
+        inputBoxRef.current &&
+        !inputBoxRef.current.contains(e.target as Node)
       ) {
         if (inputValue.trim() !== "" && openCategory) {
           addItem(openCategory);
@@ -65,6 +64,7 @@ const TodoList = () => {
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [inputValue, openCategory]);
 
   function onChangeValue(e: React.ChangeEvent<HTMLInputElement>) {
@@ -111,7 +111,7 @@ const TodoList = () => {
   );
 
   return (
-    <div ref={todoListRef}>
+    <div>
       {categories.map((c) => (
         <div key={c.id} css={TodoListBox}>
           <div
@@ -137,12 +137,8 @@ const TodoList = () => {
                 onChange={onChangeValue}
                 placeholder="Input"
                 onKeyDown={(e) => {
-                  if (e.nativeEvent.isComposing) {
-                    return;
-                  }
-                  if (e.key === "Enter") {
-                    addItem(c.id);
-                  }
+                  if (e.nativeEvent.isComposing) return;
+                  if (e.key === "Enter") addItem(c.id);
                 }}
                 style={{
                   borderBottom: `solid 2px var(${c.color})`,
@@ -190,12 +186,11 @@ const TodoList = () => {
         <Sheet isOpen={!!selectedTodo} onClose={() => setSelectedTodo(null)}>
           <Sheet.Container
             style={{
-              margin: " 0 auto",
+              margin: "0 auto",
               left: 0,
               right: 0,
               position: "absolute",
               width: "30%",
-              height: "100%",
               backgroundColor: "var(--main-gray)",
             }}
           >
