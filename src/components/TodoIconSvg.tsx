@@ -11,23 +11,22 @@ const TodoIconSvg = ({ colors = [] }: TodoIconSvgProps) => {
       circleColors = Array(4).fill(colors[0]);
       break;
     case 2:
-      circleColors[0] = colors[1];
-      circleColors[1] = colors[0];
-      circleColors[2] = colors[0];
-      circleColors[3] = colors[1];
-      break;
-    case 3:
-      circleColors[0] = colors[1];
+      circleColors[0] = colors[0];
       circleColors[1] = colors[1];
-      circleColors[2] = colors[2];
+      circleColors[2] = colors[1];
       circleColors[3] = colors[0];
       break;
-    case 4:
-      circleColors[0] = colors[2];
+    case 3:
+      circleColors[0] = colors[0];
       circleColors[1] = colors[0];
-      circleColors[2] = colors[3];
+      circleColors[2] = colors[2];
       circleColors[3] = colors[1];
       break;
+    case 4:
+      circleColors[0] = colors[0];
+      circleColors[1] = colors[3];
+      circleColors[2] = colors[2];
+      circleColors[3] = colors[1];
   }
 
   return (
