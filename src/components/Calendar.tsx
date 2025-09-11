@@ -7,6 +7,7 @@ import TodoIcon from "./TodoIconSvg";
 import "dayjs/locale/ko";
 import isoWeek from "dayjs/plugin/isoWeek";
 import { monthDoneAtom, todoListAtom } from "./Todolist";
+import { orderBy } from "es-toolkit";
 
 const currentMonthAtom = atom(dayjs());
 export const selectedDateAtom = atom(dayjs());
@@ -69,28 +70,28 @@ const Calendar = () => {
 
           if (!isCurrentMonth) return <div key={day.toString()}></div>;
 
-          const completedCategories = [
-            ...new Set(
-              todoList
-                .filter(
-                  (todo) => dayjs(todo.date).isSame(day, "day") && todo.isdone
-                )
-                .map((todo) => {
-                  switch (todo.categoryId) {
-                    case 1:
-                      return "var(--category--01)";
-                    case 2:
-                      return "var(--category--02)";
-                    case 3:
-                      return "var(--category--03)";
-                    case 4:
-                      return "var(--category--04)";
-                    default:
-                      return "var(--main-gray)";
-                  }
-                })
+          const completedCategories: string[] = [];
+          const seenCategory = new Set<number>();
+
+          orderBy(
+            todoList.filter(
+              (todo) => dayjs(todo.date).isSame(day, "day") && todo.isdone
             ),
-          ];
+            [(todo) => todo.doneAt],
+            ["asc"]
+          ).forEach((todo) => {
+            if (!seenCategory.has(todo.categoryId)) {
+              seenCategory.add(todo.categoryId);
+              completedCategories.push(
+                {
+                  1: "var(--category--01)",
+                  2: "var(--category--02)",
+                  3: "var(--category--03)",
+                  4: "var(--category--04)",
+                }[todo.categoryId] ?? "var(--main-gray)"
+              );
+            }
+          });
 
           const dayNotDone = todoList.filter(
             (todo) => dayjs(todo.date).isSame(day, "day") && !todo.isdone
