@@ -23,13 +23,13 @@ const inputValueAtom = atom("");
 export const todoListAtom = atomWithStorage<Todo[]>("todoList", []);
 export const monthDoneAtom = atom(0);
 const selectedTodoAtom = atom<Todo | null>(null);
-const openCategoriesAtom = atom<Record<number, boolean>>({});
+const openCategoryAtom = atom<number | null>(null);
 
 const categories = [
-  { id: 1, name: "카테고리 1", color: "--category--01" },
-  { id: 2, name: "카테고리 2", color: "--category--02" },
-  { id: 3, name: "카테고리 3", color: "--category--03" },
-  { id: 4, name: "카테고리 4", color: "--category--04" },
+  { id: 1, name: "개인", color: "--category--01" },
+  { id: 2, name: "작업", color: "--category--02" },
+  { id: 3, name: "쇼핑", color: "--category--03" },
+  { id: 4, name: "운동", color: "--category--04" },
 ];
 
 const TodoList = () => {
@@ -37,7 +37,7 @@ const TodoList = () => {
   const [inputValue, setInputValue] = useAtom(inputValueAtom);
   const [todoList, setTodoList] = useAtom(todoListAtom);
   const [selectedTodo, setSelectedTodo] = useAtom(selectedTodoAtom);
-  const [openCategories, setOpenCategories] = useAtom(openCategoriesAtom);
+  const [openCategory, setOpenCategory] = useAtom(openCategoryAtom);
   const [, setMonthDone] = useAtom(monthDoneAtom);
 
   useEffect(() => {
@@ -84,10 +84,7 @@ const TodoList = () => {
   }
 
   function toggleCategory(id: number) {
-    setOpenCategories((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    setOpenCategory((prev) => (prev === id ? null : id));
   }
 
   const SelectedDateTodos = todoList.filter((todo) =>
@@ -105,20 +102,24 @@ const TodoList = () => {
               background-color: var(--main-gray);
             `}
           >
-            <Earth width="17px" />
+            <Earth width="15px" />
             <span style={{ color: `var(${c.color})` }}>{c.name}</span>
-            <Plus width="17px" />
+            <Plus width="15px" />
           </div>
 
-          {openCategories[c.id] && (
+          {openCategory === c.id && (
             <div css={AddBtnBox}>
-              <TodoIcon />
+              <button css={todoBtnBox}>
+                <TodoIcon />
+              </button>
               <input
                 value={inputValue}
                 onChange={onChangeValue}
                 placeholder="Input"
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") addItem(c.id);
+                  if (e.key === "Enter") {
+                    addItem(c.id);
+                  }
                 }}
                 style={{
                   borderBottom: `solid 2px var(${c.color})`,
@@ -145,7 +146,12 @@ const TodoList = () => {
                         }
                       />
                     </button>
-                    {todo.text}
+                    <span
+                      onClick={() => setSelectedTodo(todo)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {todo.text}
+                    </span>
                   </div>
                   <Ellipsis
                     cursor="pointer"
@@ -258,8 +264,6 @@ const TodoListCol = css`
 `;
 
 const AddBtnBox = css`
-  margin-top: 20px;
-  margin-bottom: 20px;
   display: flex;
   flex-direction: row;
   text-align: center;
@@ -283,16 +287,17 @@ const TodoTitle = css`
   justify-content: center;
   align-items: center;
   gap: 10px;
-  width: 120px;
-  height: 25px;
+  width: 80px;
+  height: 15px;
   border-radius: 300px;
   background-color: var(--main-gray);
   text-align: center;
-  font-weight: bold;
-  font-size: 15px;
+  font-weight: 800;
+  font-size: 14px;
 `;
 
 const TodoListBox = css`
+  margin-top: 15px;
   display: flex;
   flex-direction: column;
   margin-left: 20px;
