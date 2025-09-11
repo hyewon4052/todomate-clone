@@ -24,6 +24,7 @@ export const todoListAtom = atomWithStorage<Todo[]>("todoList", []);
 export const monthDoneAtom = atom(0);
 const selectedTodoAtom = atom<Todo | null>(null);
 const openCategoryAtom = atom<number | null>(null);
+const openModalAtom = atom(false);
 
 const categories = [
   { id: 1, name: "개인", color: "--category--01" },
@@ -38,6 +39,7 @@ const TodoList = () => {
   const [todoList, setTodoList] = useAtom(todoListAtom);
   const [selectedTodo, setSelectedTodo] = useAtom(selectedTodoAtom);
   const [openCategory, setOpenCategory] = useAtom(openCategoryAtom);
+  const [openModal, setOpenModal] = useAtom(openModalAtom);
   const [, setMonthDone] = useAtom(monthDoneAtom);
   const inputBoxRef = useRef<HTMLInputElement | null>(null);
 
@@ -174,7 +176,10 @@ const TodoList = () => {
                   </div>
                   <Ellipsis
                     cursor="pointer"
-                    onClick={() => setSelectedTodo(todo)}
+                    onClick={() => {
+                      setOpenModal(true);
+                      setSelectedTodo(todo);
+                    }}
                   />
                 </div>
               ))}
@@ -182,8 +187,14 @@ const TodoList = () => {
         </div>
       ))}
 
-      {selectedTodo && (
-        <Sheet isOpen={!!selectedTodo} onClose={() => setSelectedTodo(null)}>
+      {openModal && (
+        <Sheet
+          isOpen={openModal}
+          onClose={() => {
+            setOpenModal(false);
+          }}
+          detent="content"
+        >
           <Sheet.Container
             style={{
               margin: "0 auto",
@@ -191,36 +202,45 @@ const TodoList = () => {
               right: 0,
               position: "absolute",
               width: "30%",
+              paddingBottom: "100px",
               backgroundColor: "var(--main-gray)",
+              borderRadius: "16px",
             }}
           >
             <Sheet.Header />
             <Sheet.Content>
-              <div css={ModalBox}>
-                <span>{selectedTodo.text}</span>
-                <div css={ModalItemBox}>
-                  <div
-                    css={ModalItem}
-                    onClick={() => {
-                      setSelectedTodo(null);
-                      editItem(selectedTodo.id);
-                    }}
-                  >
-                    <SquarePen />
-                    Edit
-                  </div>
-                  <div
-                    css={ModalItem}
-                    onClick={() => deleteItem(selectedTodo.id)}
-                  >
-                    <Trash />
-                    Delete
+              {selectedTodo && (
+                <div css={ModalBox}>
+                  <span>{selectedTodo.text}</span>
+                  <div css={ModalItemBox}>
+                    <div
+                      css={ModalItem}
+                      onClick={() => {
+                        setSelectedTodo(null);
+                        editItem(selectedTodo.id);
+                      }}
+                    >
+                      <SquarePen />
+                      Edit
+                    </div>
+                    <div
+                      css={ModalItem}
+                      onClick={() => deleteItem(selectedTodo.id)}
+                    >
+                      <Trash />
+                      Delete
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </Sheet.Content>
           </Sheet.Container>
-          <Sheet.Backdrop />
+          <Sheet.Backdrop
+            onTap={() => {
+              setOpenModal(false);
+              setSelectedTodo(null);
+            }}
+          />
         </Sheet>
       )}
     </div>
