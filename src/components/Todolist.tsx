@@ -156,9 +156,11 @@ const TodoList = () => {
         <Sheet isOpen={!!selectedTodo} onClose={() => setSelectedTodo(null)}>
           <Sheet.Container
             style={{
-              left: "25%",
-              transform: "translate(-50%, -50%)",
-              width: "50%",
+              margin: " 0 auto",
+              left: 0,
+              right: 0,
+              position: "absolute",
+              width: "30%",
               height: "100%",
               backgroundColor: "var(--main-gray)",
             }}
@@ -261,9 +263,9 @@ const AddBtnBox = css`
   input {
     border: 0;
     border-style: none;
-    border-bottom: solid 1px #cacaca;
     border-collapse: collapse;
     width: 100%;
+    height: 35px;
     background-color: transparent;
     outline: none;
   }
@@ -279,7 +281,7 @@ const TodoTitle = css`
   width: 120px;
   height: 25px;
   border-radius: 300px;
-  background-color: #1c1c1c;
+  background-color: var(--main-gray);
   text-align: center;
   font-weight: bold;
   font-size: 15px;
