@@ -117,6 +117,9 @@ const TodoList = () => {
                 onChange={onChangeValue}
                 placeholder="Input"
                 onKeyDown={(e) => {
+                  if (e.nativeEvent.isComposing) {
+                    return;
+                  }
                   if (e.key === "Enter") {
                     addItem(c.id);
                   }
