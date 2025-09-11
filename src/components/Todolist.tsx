@@ -135,8 +135,10 @@ const TodoList = () => {
                       onClick={() => changeDoneItem(todo.id)}
                     >
                       <TodoIcon
-                        color={
-                          todo.isdone ? `var(${c.color})` : "var(--main-gray)"
+                        colors={
+                          todo.isdone
+                            ? [`var(${c.color})`]
+                            : ["var(--main-gray)"]
                         }
                       />
                     </button>
