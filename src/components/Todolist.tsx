@@ -16,6 +16,7 @@ export type Todo = {
   date: Date;
   isdone: boolean;
   categoryId: number;
+  doneAt?: Date;
 };
 
 const inputValueAtom = atom("");
@@ -75,7 +76,9 @@ const TodoList = () => {
 
   function changeDoneItem(id: number) {
     const updatedTodoList = todoList.map((todo) =>
-      todo.id === id ? { ...todo, isdone: !todo.isdone } : todo
+      todo.id === id
+        ? { ...todo, isdone: !todo.isdone, doneAt: new Date() }
+        : todo
     );
     setTodoList(updatedTodoList);
   }
