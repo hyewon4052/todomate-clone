@@ -7,7 +7,7 @@ import TodoIcon from "./TodoIconSvg";
 import { Sheet } from "react-modal-sheet";
 import { selectedDateAtom } from "./Calendar";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import "../index.css";
 
 export type Todo = {
@@ -39,6 +39,8 @@ const TodoList = () => {
   const [selectedTodo, setSelectedTodo] = useAtom(selectedTodoAtom);
   const [openCategory, setOpenCategory] = useAtom(openCategoryAtom);
   const [, setMonthDone] = useAtom(monthDoneAtom);
+  const inputBoxRef = useRef<HTMLInputElement | null>(null);
+  const todoListRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!selectedDate) return;
@@ -49,6 +51,21 @@ const TodoList = () => {
 
     setMonthDone(doneCount);
   }, [todoList, selectedDate, setMonthDone]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        todoListRef.current &&
+        !todoListRef.current.contains(e.target as Node)
+      ) {
+        if (inputValue.trim() !== "" && openCategory) {
+          addItem(openCategory);
+        }
+        setOpenCategory(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+  }, [inputValue, openCategory]);
 
   function onChangeValue(e: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(e.target.value);
@@ -74,6 +91,8 @@ const TodoList = () => {
     setSelectedTodo(null);
   }
 
+  function editItem(id: number) {}
+
   function changeDoneItem(id: number) {
     const updatedTodoList = todoList.map((todo) =>
       todo.id === id
@@ -92,7 +111,7 @@ const TodoList = () => {
   );
 
   return (
-    <div>
+    <div ref={todoListRef}>
       {categories.map((c) => (
         <div key={c.id} css={TodoListBox}>
           <div
@@ -113,6 +132,7 @@ const TodoList = () => {
                 <TodoIcon />
               </button>
               <input
+                ref={inputBoxRef}
                 value={inputValue}
                 onChange={onChangeValue}
                 placeholder="Input"
@@ -184,7 +204,13 @@ const TodoList = () => {
               <div css={ModalBox}>
                 <span>{selectedTodo.text}</span>
                 <div css={ModalItemBox}>
-                  <div css={ModalItem}>
+                  <div
+                    css={ModalItem}
+                    onClick={() => {
+                      setSelectedTodo(null);
+                      editItem(selectedTodo.id);
+                    }}
+                  >
                     <SquarePen />
                     Edit
                   </div>
