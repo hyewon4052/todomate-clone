@@ -68,6 +68,25 @@ const Calendar = () => {
 
           if (!isCurrentMonth) return <div key={day.toString()}></div>;
 
+          const completedCategories = todoList
+            .filter(
+              (todo) => dayjs(todo.date).isSame(day, "day") && todo.isdone
+            )
+            .map((todo) => {
+              switch (todo.categoryId) {
+                case 1:
+                  return "var(--category--01)";
+                case 2:
+                  return "var(--category--02)";
+                case 3:
+                  return "var(--category--03)";
+                case 4:
+                  return "var(--category--04)";
+                default:
+                  return "var(--main-gray)";
+              }
+            });
+
           const dayNotDone = todoList.filter(
             (todo) => dayjs(todo.date).isSame(day, "day") && !todo.isdone
           ).length;
@@ -84,7 +103,7 @@ const Calendar = () => {
             >
               <div css={TodoIconBox}>
                 {dayNotDone > 0 && <span>{dayNotDone}</span>}
-                <TodoIcon />
+                <TodoIcon colors={completedCategories} />
               </div>
               {isSelected ? (
                 <div css={[SelectedDate, { color: "black" }]}>{day.date()}</div>
@@ -105,7 +124,7 @@ const TodoIconBox = css`
     position: absolute;
     display: flex;
     left: 33%;
-    font-weight: 600;
+    font-weight: 800;
   }
 `;
 const SelectedDate = css`
@@ -152,8 +171,9 @@ const DayCell = css`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 5px;
   font-size: 12px;
+  font-weight: 700;
 `;
 
 const TodayCell = css`
