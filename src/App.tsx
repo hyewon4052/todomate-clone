@@ -1,23 +1,27 @@
-import styled from "styled-components";
-import Body from "./components/Body/Body";
+/** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react";
+import Body from "./components/Body";
+import Footer from "./components/Footer";
+
 import "./index.css";
 
 function App() {
   return (
-    <Main>
-      <Body></Body>
-    </Main>
+    <div css={mainStyle}>
+      <Body />
+      <Footer />
+    </div>
   );
 }
 
-export default App;
-
-export const Main = styled.div`
+const mainStyle = css`
   margin: 0 auto;
-  width: 60%;
+  width: 50%;
   min-height: 100%;
   max-width: 1200px;
-  background: white;
+  background: black;
   display: flex;
   flex-direction: column;
 `;
+
+export default App;
