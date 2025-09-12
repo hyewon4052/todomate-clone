@@ -96,7 +96,16 @@ const TodoList = () => {
     setOpenModal(false);
   }
 
-  function editItem(id: number) {}
+  function editItem(id: number) {
+    const todo = todoList.find((t) => t.id === id);
+    if (todo) {
+      deleteItem(id);
+      setInputValue(todo.text);
+      addItem(todo.categoryId);
+      setOpenCategory(todo.categoryId);
+      setOpenModal(false);
+    }
+  }
 
   function changeDoneItem(id: number) {
     const updatedTodoList = todoList.map((todo) =>
