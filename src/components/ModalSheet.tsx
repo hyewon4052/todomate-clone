@@ -29,7 +29,7 @@ const ModalSheet = ({
           left: 0,
           right: 0,
           position: "absolute",
-          width: "30%",
+          width: "40%",
           paddingBottom: "100px",
           backgroundColor: "var(--main-gray)",
           borderRadius: "16px",
