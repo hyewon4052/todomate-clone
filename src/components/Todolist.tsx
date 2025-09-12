@@ -1,14 +1,22 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { Ellipsis, Earth, Plus, SquarePen, Trash } from "lucide-react";
-import { atom, useAtom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { Ellipsis, Earth, Plus } from "lucide-react";
+import { useAtom } from "jotai";
 import TodoIcon from "./TodoIconSvg";
-import { Sheet } from "react-modal-sheet";
-import { selectedDateAtom } from "./Calendar";
+import ModalSheet from "./ModalSheet";
+import { selectedDateAtom } from "../jotai/calendar/atoms";
+import { selectedDateTodosAtom } from "../jotai/todo/selectors";
 import dayjs from "dayjs";
 import { useEffect, useRef } from "react";
 import "../index.css";
+import {
+  inputValueAtom,
+  todoListAtom,
+  monthDoneAtom,
+  selectedTodoAtom,
+  openCategoryAtom,
+  openModalAtom,
+} from "../jotai/todo/atoms";
 
 export type Todo = {
   id: number;
@@ -19,14 +27,7 @@ export type Todo = {
   doneAt?: Date;
 };
 
-const inputValueAtom = atom("");
-export const todoListAtom = atomWithStorage<Todo[]>("todoList", []);
-export const monthDoneAtom = atom(0);
-const selectedTodoAtom = atom<Todo | null>(null);
-const openCategoryAtom = atom<number | null>(null);
-const openModalAtom = atom(false);
-
-const categories = [
+export const categories = [
   { id: 1, name: "개인", color: "--category--01" },
   { id: 2, name: "작업", color: "--category--02" },
   { id: 3, name: "쇼핑", color: "--category--03" },
@@ -34,6 +35,7 @@ const categories = [
 ];
 
 const TodoList = () => {
+  const [SelectedDateTodos] = useAtom(selectedDateTodosAtom);
   const [selectedDate] = useAtom(selectedDateAtom);
   const [inputValue, setInputValue] = useAtom(inputValueAtom);
   const [todoList, setTodoList] = useAtom(todoListAtom);
@@ -91,6 +93,7 @@ const TodoList = () => {
     const updateTodoList = todoList.filter((todo) => todo.id !== id);
     setTodoList(updateTodoList);
     setSelectedTodo(null);
+    setOpenModal(false);
   }
 
   function editItem(id: number) {}
@@ -107,11 +110,6 @@ const TodoList = () => {
   function toggleCategory(id: number) {
     setOpenCategory((prev) => (prev === id ? null : id));
   }
-
-  const SelectedDateTodos = todoList.filter((todo) =>
-    dayjs(todo.date).isSame(selectedDate, "day")
-  );
-
   return (
     <div>
       {categories.map((c) => (
@@ -187,62 +185,14 @@ const TodoList = () => {
         </div>
       ))}
 
-      {openModal && (
-        <Sheet
-          isOpen={openModal}
-          onClose={() => {
-            setOpenModal(false);
-          }}
-          detent="content"
-        >
-          <Sheet.Container
-            style={{
-              margin: "0 auto",
-              left: 0,
-              right: 0,
-              position: "absolute",
-              width: "30%",
-              paddingBottom: "100px",
-              backgroundColor: "var(--main-gray)",
-              borderRadius: "16px",
-            }}
-          >
-            <Sheet.Header />
-            <Sheet.Content>
-              {selectedTodo && (
-                <div css={ModalBox}>
-                  <span>{selectedTodo.text}</span>
-                  <div css={ModalItemBox}>
-                    <div
-                      css={ModalItem}
-                      onClick={() => {
-                        setSelectedTodo(null);
-                        editItem(selectedTodo.id);
-                      }}
-                    >
-                      <SquarePen />
-                      Edit
-                    </div>
-                    <div
-                      css={ModalItem}
-                      onClick={() => deleteItem(selectedTodo.id)}
-                    >
-                      <Trash />
-                      Delete
-                    </div>
-                  </div>
-                </div>
-              )}
-            </Sheet.Content>
-          </Sheet.Container>
-          <Sheet.Backdrop
-            onTap={() => {
-              setOpenModal(false);
-              setSelectedTodo(null);
-            }}
-          />
-        </Sheet>
-      )}
+      <ModalSheet
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        selectedTodo={selectedTodo}
+        onEdit={editItem}
+        onDelete={deleteItem}
+        clearSelectedTodo={() => setSelectedTodo(null)}
+      />
     </div>
   );
 };
@@ -253,37 +203,6 @@ const todoBtnBox = css`
   height: 21px;
   width: 21px;
   cursor: pointer;
-`;
-
-const ModalItem = css`
-  display: flex;
-  flex-direction: column;
-  width: 230px;
-  height: 100px;
-  background-color: #333333;
-  border-radius: 10px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  cursor: pointer;
-`;
-
-const ModalItemBox = css`
-  margin-top: 20px;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-`;
-
-const ModalBox = css`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  span {
-    font-weight: 800;
-  }
 `;
 
 const TodoItemRow = css`

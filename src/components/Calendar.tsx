@@ -2,34 +2,20 @@
 import { css } from "@emotion/react";
 import { ChevronLeft, ChevronRight, BadgeCheck } from "lucide-react";
 import dayjs from "dayjs";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import TodoIcon from "./TodoIconSvg";
 import "dayjs/locale/ko";
-import isoWeek from "dayjs/plugin/isoWeek";
-import { monthDoneAtom, todoListAtom } from "./Todolist";
+import { currentMonthAtom, selectedDateAtom } from "../jotai/calendar/atoms";
+import { daysCalendarAtom } from "../jotai/calendar/selectors";
+import { monthDoneAtom, todoListAtom } from "../jotai/todo/atoms";
 import { orderBy } from "es-toolkit";
-
-const currentMonthAtom = atom(dayjs());
-export const selectedDateAtom = atom(dayjs());
 
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useAtom(currentMonthAtom);
   const [selectedDate, setSelectedDate] = useAtom(selectedDateAtom);
   const [monthDone] = useAtom(monthDoneAtom);
   const [todoList] = useAtom(todoListAtom);
-
-  dayjs.extend(isoWeek);
-  const startOfMonth = currentMonth.startOf("month");
-  const endOfMonth = currentMonth.endOf("month");
-  const startDate = startOfMonth.startOf("isoWeek");
-  const endDate = endOfMonth.endOf("week");
-
-  const days: dayjs.Dayjs[] = [];
-  let date = startDate;
-  while (date.isBefore(endDate) || date.isSame(endDate, "day")) {
-    days.push(date);
-    date = date.add(1, "day");
-  }
+  const [days] = useAtom(daysCalendarAtom);
 
   const handlePrevMonth = () =>
     setCurrentMonth(currentMonth.subtract(1, "month"));
