@@ -17,9 +17,15 @@ const Calendar = () => {
   const [todoList] = useAtom(todoListAtom);
   const [days] = useAtom(daysCalendarAtom);
 
-  const handlePrevMonth = () =>
+  const handlePrevMonth = () => {
     setCurrentMonth(currentMonth.subtract(1, "month"));
-  const handleNextMonth = () => setCurrentMonth(currentMonth.add(1, "month"));
+    setSelectedDate(selectedDate.subtract(1, "month").startOf("month"));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(currentMonth.add(1, "month"));
+    setSelectedDate(selectedDate.add(1, "month").startOf("month"));
+  };
 
   return (
     <div css={CalendarBox}>
