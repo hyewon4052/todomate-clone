@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { Ellipsis, Earth, Plus } from "lucide-react";
+import { Ellipsis, Earth, Plus, Check, Divide } from "lucide-react";
 import { useAtom } from "jotai";
 import TodoIcon from "./TodoIconSvg";
 import ModalSheet from "./ModalSheet";
@@ -24,7 +24,6 @@ export type Todo = {
   date: Date;
   isdone: boolean;
   categoryId: number;
-  doneAt?: Date;
 };
 
 export const categories = [
@@ -109,9 +108,7 @@ const TodoList = () => {
 
   function changeDoneItem(id: number) {
     const updatedTodoList = todoList.map((todo) =>
-      todo.id === id
-        ? { ...todo, isdone: !todo.isdone, doneAt: new Date() }
-        : todo
+      todo.id === id ? { ...todo, isdone: !todo.isdone } : todo
     );
     setTodoList(updatedTodoList);
   }
@@ -173,6 +170,18 @@ const TodoList = () => {
                             : ["var(--main-gray)"]
                         }
                       />
+                      {todo.isdone && (
+                        <Check
+                          style={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: "15px",
+                            height: "15px",
+                          }}
+                        />
+                      )}
                     </button>
                     <span
                       onClick={() => setSelectedTodo(todo)}
@@ -207,6 +216,7 @@ const TodoList = () => {
 };
 
 const todoBtnBox = css`
+  position: relative;
   padding: 0;
   background-color: rgba(0, 0, 0, 0);
   height: 21px;
