@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { Ellipsis, Earth, Plus, Check, Divide } from "lucide-react";
-import { useAtom } from "jotai";
+import { Ellipsis, Earth, Plus, Check } from "lucide-react";
+import { useAtom, useSetAtom } from "jotai";
 import TodoIcon from "./TodoIconSvg";
 import ModalSheet from "./ModalSheet";
 import { selectedDateAtom } from "../jotai/calendar/atoms";
@@ -41,8 +41,8 @@ const TodoList = () => {
   const [selectedTodo, setSelectedTodo] = useAtom(selectedTodoAtom);
   const [openCategory, setOpenCategory] = useAtom(openCategoryAtom);
   const [openModal, setOpenModal] = useAtom(openModalAtom);
-  const [, setMonthDone] = useAtom(monthDoneAtom);
-  const inputBoxRef = useRef<HTMLInputElement | null>(null);
+  const setMonthDone = useSetAtom(monthDoneAtom);
+  const inputBoxRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!selectedDate) return;

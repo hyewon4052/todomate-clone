@@ -2,7 +2,7 @@
 import { css } from "@emotion/react";
 import { ChevronLeft, ChevronRight, BadgeCheck, Check } from "lucide-react";
 import dayjs from "dayjs";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import TodoIcon from "./TodoIconSvg";
 import "dayjs/locale/ko";
 import { currentMonthAtom, selectedDateAtom } from "../jotai/calendar/atoms";
@@ -12,9 +12,9 @@ import { monthDoneAtom, todoListAtom } from "../jotai/todo/atoms";
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useAtom(currentMonthAtom);
   const [selectedDate, setSelectedDate] = useAtom(selectedDateAtom);
-  const [monthDone] = useAtom(monthDoneAtom);
-  const [todoList] = useAtom(todoListAtom);
-  const [days] = useAtom(daysCalendarAtom);
+  const monthDone = useAtomValue(monthDoneAtom);
+  const todoList = useAtomValue(todoListAtom);
+  const days = useAtomValue(daysCalendarAtom);
 
   const handlePrevMonth = () => {
     setCurrentMonth(currentMonth.subtract(1, "month"));
@@ -29,10 +29,12 @@ const Calendar = () => {
   return (
     <div css={CalendarBox}>
       <div css={CalendarHeader}>
-        <div css={CountBox}>
+        <div css={CalendarDateBox}>
           <span>{currentMonth.format("MMM YYYY")}</span>
-          <BadgeCheck width="18px" />
-          <span>{monthDone}</span>
+          <div css={CountBox}>
+            <BadgeCheck width="16px" />
+            <span>{monthDone}</span>
+          </div>
         </div>
         <div css={CalendarBtnBox}>
           <ChevronLeft
@@ -128,10 +130,20 @@ const Calendar = () => {
   );
 };
 
+const CalendarDateBox = css`
+  margin-left: 8px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+`;
+
 const TodoIconBox = css`
   position: relative;
   width: 21px;
   height: 21px;
+  cursor: pointer;
   span {
     position: absolute;
     display: flex;
@@ -162,6 +174,7 @@ const CalendarHeader = css`
   margin-bottom: 10px;
   span {
     font-weight: 700;
+    font-size: 13px;
   }
 `;
 
@@ -181,6 +194,7 @@ const DayHeader = css`
 `;
 
 const DayCell = css`
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -201,6 +215,9 @@ const CountBox = css`
   gap: 5px;
   justify-content: center;
   align-items: center;
+  span {
+    font-size: 13px;
+  }
 `;
 
 export default Calendar;
