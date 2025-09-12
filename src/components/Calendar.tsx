@@ -118,7 +118,7 @@ const Calendar = () => {
                 <TodoIcon colors={completedCategories} />
               </div>
               {isSelected ? (
-                <div css={[SelectedDate, { color: "black" }]}>{day.date()}</div>
+                <div css={SelectedDate}>{day.date()}</div>
               ) : (
                 <div style={{ color: dayColor }}>{day.date()}</div>
               )}
