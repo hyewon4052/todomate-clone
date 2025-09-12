@@ -39,7 +39,7 @@ const TodoList = () => {
   const [selectedTodo, setSelectedTodo] = useAtom(selectedTodoAtom);
   const [openCategory, setOpenCategory] = useAtom(openCategoryAtom);
   const [openModal, setOpenModal] = useAtom(openModalAtom);
-  const SelectedDateTodos = useAtomValue(selectedDateTodosAtom);
+  const selectedDateTodos = useAtomValue(selectedDateTodosAtom);
   const selectedDate = useAtomValue(selectedDateAtom);
   const setMonthDone = useSetAtom(monthDoneAtom);
   const inputBoxRef = useRef<HTMLInputElement>(null);
@@ -154,7 +154,8 @@ const TodoList = () => {
           )}
 
           <div css={TodoListCol}>
-            {SelectedDateTodos.filter((todo) => todo.categoryId === c.id)
+            {selectedDateTodos
+              .filter((todo) => todo.categoryId === c.id)
               .sort((a, b) => (a.isdone === b.isdone ? 0 : a.isdone ? 1 : -1))
               .map((todo) => (
                 <div css={TodoItemRow} key={todo.id}>
