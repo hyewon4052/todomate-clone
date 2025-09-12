@@ -8,6 +8,7 @@ import "dayjs/locale/ko";
 import { currentMonthAtom, selectedDateAtom } from "../jotai/calendar/atoms";
 import { daysCalendarAtom } from "../jotai/calendar/selectors";
 import { monthDoneAtom, todoListAtom } from "../jotai/todo/atoms";
+import { categories } from "./Todolist";
 
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useAtom(currentMonthAtom);
@@ -64,26 +65,19 @@ const Calendar = () => {
           if (!isCurrentMonth) return <div key={day.toString()}></div>;
 
           const completedCategories: string[] = [];
-          const seenCategory = new Set<number>();
 
           todoList
             .filter(
               (todo) => dayjs(todo.date).isSame(day, "day") && todo.isdone
             )
-            .sort((a, b) => {
-              return a.categoryId - b.categoryId;
-            })
+            .sort((a, b) => a.categoryId - b.categoryId)
             .forEach((todo) => {
-              if (!seenCategory.has(todo.categoryId)) {
-                seenCategory.add(todo.categoryId);
-                completedCategories.push(
-                  {
-                    1: "var(--category--01)",
-                    2: "var(--category--02)",
-                    3: "var(--category--03)",
-                    4: "var(--category--04)",
-                  }[todo.categoryId] ?? "var(--main-gray)"
-                );
+              const category = categories.find((c) => c.id === todo.categoryId);
+              if (
+                category &&
+                !completedCategories.includes(`var(${category.color})`)
+              ) {
+                completedCategories.push(`var(${category.color})`);
               }
             });
 
