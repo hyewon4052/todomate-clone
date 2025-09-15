@@ -3,8 +3,9 @@ import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import { currentMonthAtom } from "./atoms";
 
+dayjs.extend(isoWeek);
+
 export const daysCalendarAtom = atom((get) => {
-  dayjs.extend(isoWeek);
   const currentMonth = get(currentMonthAtom);
   const startOfMonth = currentMonth.startOf("month");
   const endOfMonth = currentMonth.endOf("month");
