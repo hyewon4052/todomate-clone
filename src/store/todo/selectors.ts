@@ -12,3 +12,11 @@ export const selectedDateTodosAtom = atom((get) => {
     dayjs(todo.date).isSame(selectedDate, "day")
   );
 });
+
+export const categoryTodosAtom = (categoryId: number) =>
+  atom((get) => {
+    const todos = get(selectedDateTodosAtom);
+    return todos
+      .filter((todo) => todo.categoryId === categoryId)
+      .sort((a, b) => (a.isdone === b.isdone ? 0 : a.isdone ? 1 : -1));
+  });

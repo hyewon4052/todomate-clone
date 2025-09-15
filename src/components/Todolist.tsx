@@ -4,8 +4,8 @@ import { Ellipsis, Earth, Plus, Check } from "lucide-react";
 import { useAtom, useSetAtom, useAtomValue } from "jotai";
 import TodoIcon from "./TodoIconSvg";
 import ModalSheet from "./ModalSheet";
-import { selectedDateAtom } from "../jotai/calendar/atoms";
-import { selectedDateTodosAtom } from "../jotai/todo/selectors";
+import { selectedDateAtom } from "../store/calendar/atoms";
+import { selectedDateTodosAtom } from "../store/todo/selectors";
 import dayjs from "dayjs";
 import { useEffect, useRef } from "react";
 import "../index.css";
@@ -16,7 +16,7 @@ import {
   selectedTodoAtom,
   openCategoryAtom,
   openModalAtom,
-} from "../jotai/todo/atoms";
+} from "../store/todo/atoms";
 
 export type Todo = {
   id: number;

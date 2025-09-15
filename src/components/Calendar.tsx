@@ -5,9 +5,9 @@ import dayjs from "dayjs";
 import { useAtom, useAtomValue } from "jotai";
 import TodoIcon from "./TodoIconSvg";
 import "dayjs/locale/ko";
-import { currentMonthAtom, selectedDateAtom } from "../jotai/calendar/atoms";
-import { daysCalendarAtom } from "../jotai/calendar/selectors";
-import { monthDoneAtom, todoListAtom } from "../jotai/todo/atoms";
+import { currentMonthAtom, selectedDateAtom } from "../store/calendar/atoms";
+import { daysCalendarAtom } from "../store/calendar/selectors";
+import { monthDoneAtom, todoListAtom } from "../store/todo/atoms";
 import { categories } from "./Todolist";
 
 const Calendar = () => {
@@ -147,6 +147,7 @@ const TodoIconBox = css`
     font-weight: 800;
   }
 `;
+
 const SelectedDate = css`
   width: 17px;
   height: 17px;
