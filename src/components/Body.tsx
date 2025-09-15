@@ -10,7 +10,7 @@ const Body = () => {
     <Flex col gap={20} pb={80} mt={40} height={"100%"}>
       <Flex row gap={15} width={"50%"}>
         <Flex col gap={15}>
-          <Flex row center mt={10}>
+          <Flex row mt={10} gap={10}>
             <div css={ProfileImg} />
             <Flex col>
               <span style={{ fontSize: "15px" }}>Name</span>
