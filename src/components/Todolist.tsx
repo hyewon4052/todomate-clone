@@ -8,6 +8,7 @@ import { selectedDateAtom } from "../store/calendar/atoms";
 import { selectedDateTodosAtom } from "../store/todo/selectors";
 import dayjs from "dayjs";
 import { useEffect, useRef } from "react";
+import { v4 as uuidv4 } from "uuid";
 import "../index.css";
 import {
   inputValueAtom,
@@ -19,7 +20,7 @@ import {
 } from "../store/todo/atoms";
 
 export type Todo = {
-  id: number;
+  id: string;
   text: string;
   date: Date;
   isdone: boolean;
@@ -77,7 +78,7 @@ const TodoList = () => {
   function addItem(categoryId: number) {
     if (inputValue.trim() !== "" && selectedDate) {
       const newTodo: Todo = {
-        id: todoList.length + 1,
+        id: uuidv4(),
         text: inputValue,
         date: selectedDate.toDate(),
         isdone: false,
@@ -88,14 +89,14 @@ const TodoList = () => {
     }
   }
 
-  function deleteItem(id: number) {
+  function deleteItem(id: string) {
     const updateTodoList = todoList.filter((todo) => todo.id !== id);
     setTodoList(updateTodoList);
     setSelectedTodo(null);
     setOpenModal(false);
   }
 
-  function editItem(id: number) {
+  function editItem(id: string) {
     const todo = todoList.find((t) => t.id === id);
     if (todo) {
       deleteItem(id);
@@ -106,7 +107,7 @@ const TodoList = () => {
     }
   }
 
-  function changeDoneItem(id: number) {
+  function changeDoneItem(id: string) {
     const updatedTodoList = todoList.map((todo) =>
       todo.id === id ? { ...todo, isdone: !todo.isdone } : todo
     );

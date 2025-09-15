@@ -8,8 +8,8 @@ type ModalSheetProps = {
   isOpen: boolean;
   onClose: () => void;
   selectedTodo: Todo | null;
-  onEdit: (id: number) => void;
-  onDelete: (id: number) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
   clearSelectedTodo: () => void;
 };
 
