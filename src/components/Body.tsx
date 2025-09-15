@@ -3,69 +3,34 @@ import { css } from "@emotion/react";
 import { SmilePlus } from "lucide-react";
 import Calendar from "./Calendar";
 import TodoList from "./Todolist";
+import Flex from "./Flex";
 
 const Body = () => {
   return (
-    <div css={BodyLayout}>
-      <div css={bodyItemList}>
-        <div css={LeftBox}>
-          <div css={ProfileBox}>
+    <Flex col gap={20} pb={80} mt={40} height={"100%"}>
+      <Flex row gap={15} width={"50%"}>
+        <Flex col gap={15}>
+          <Flex row center mt={10}>
             <div css={ProfileImg} />
-            <div css={NameBox}>
+            <Flex col>
               <span style={{ fontSize: "15px" }}>Name</span>
               <span style={{ fontSize: "13px" }}>Describe yourself here</span>
-            </div>
+            </Flex>
             <SmilePlus />
-          </div>
+          </Flex>
           <Calendar />
-        </div>
+        </Flex>
         <TodoList />
-      </div>
-    </div>
+      </Flex>
+    </Flex>
   );
 };
-
-const BodyLayout = css`
-  margin-top: 40px;
-  min-height: calc(100%-10%);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding-bottom: 80px;
-`;
-
-const ProfileBox = css`
-  margin-top: 10px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-`;
 
 const ProfileImg = css`
   border-radius: 50px;
   width: 50px;
   height: 50px;
   background-color: #222222;
-`;
-
-const bodyItemList = css`
-  width: 50%;
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
-`;
-
-const LeftBox = css`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-`;
-
-const NameBox = css`
-  display: flex;
-  flex-direction: column;
 `;
 
 export default Body;
