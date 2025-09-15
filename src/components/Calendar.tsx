@@ -10,6 +10,7 @@ import { daysCalendarAtom } from "../store/calendar/selectors";
 import { monthDoneAtom, todoListAtom } from "../store/todo/atoms";
 import { categories } from "./Todolist";
 import { useCallback } from "react";
+import Flex from "./Flex";
 
 const weeks = Object.freeze(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
 
@@ -66,15 +67,15 @@ const Calendar = () => {
 
   return (
     <div css={CalendarBox}>
-      <div css={CalendarHeader}>
-        <div css={CalendarDateBox}>
+      <Flex row spaceBetween mb={10}>
+        <Flex row gap={10} center ml={8}>
           <span>{currentMonth.format("MMM YYYY")}</span>
-          <div css={CountBox}>
+          <Flex row gap={5} center>
             <BadgeCheck width="16px" />
             <span>{monthDone}</span>
-          </div>
-        </div>
-        <div css={CalendarBtnBox}>
+          </Flex>
+        </Flex>
+        <Flex row gap={10}>
           <ChevronLeft
             onClick={handlePrevMonth}
             width="18px"
@@ -85,8 +86,8 @@ const Calendar = () => {
             width="18px"
             cursor="pointer"
           />
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       <div css={CalendarGrid}>
         {weeks.map((d) => (
@@ -109,10 +110,13 @@ const Calendar = () => {
           const dayColor = getDayColor(day);
 
           return (
-            <div
+            <Flex
               key={day.toString()}
-              css={[DayCell, isToday && TodayCell]}
+              col
+              center
+              gap={10}
               onClick={() => setSelectedDate(day)}
+              css={[DayCell, isToday && TodayCell]}
             >
               <div css={TodoIconBox}>
                 {dayNotDone > 0 && <span>{dayNotDone}</span>}
@@ -135,22 +139,13 @@ const Calendar = () => {
               ) : (
                 <div style={{ color: dayColor }}>{day.date()}</div>
               )}
-            </div>
+            </Flex>
           );
         })}
       </div>
     </div>
   );
 };
-
-const CalendarDateBox = css`
-  margin-left: 8px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-`;
 
 const TodoIconBox = css`
   position: relative;
@@ -181,27 +176,13 @@ const CalendarBox = css`
   color: white;
 `;
 
-const CalendarHeader = css`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  span {
-    font-weight: 700;
-    font-size: 13px;
-  }
-`;
-
 const CalendarGrid = css`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 8px;
   text-align: center;
 `;
-const CalendarBtnBox = css`
-  display: flex;
-  gap: 10px;
-`;
+
 const DayHeader = css`
   font-weight: bold;
   font-size: 12px;
@@ -209,11 +190,6 @@ const DayHeader = css`
 
 const DayCell = css`
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
   font-size: 12px;
   font-weight: 700;
 `;
@@ -221,17 +197,6 @@ const DayCell = css`
 const TodayCell = css`
   color: #fff;
   font-weight: bold;
-`;
-
-const CountBox = css`
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
-  justify-content: center;
-  align-items: center;
-  span {
-    font-size: 13px;
-  }
 `;
 
 export default Calendar;
