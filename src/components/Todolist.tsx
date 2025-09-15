@@ -9,6 +9,7 @@ import { selectedDateTodosAtom } from "../store/todo/selectors";
 import dayjs from "dayjs";
 import { useEffect, useRef, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
+import Flex from "./Flex";
 import "../index.css";
 import {
   inputValueAtom,
@@ -145,7 +146,7 @@ const TodoList = () => {
   return (
     <div>
       {categories.map((c) => (
-        <div key={c.id} css={TodoListBox}>
+        <Flex key={c.id} col mt={15} ml={20}>
           <div
             onClick={() => toggleCategory(c.id)}
             css={css`
@@ -159,7 +160,7 @@ const TodoList = () => {
           </div>
 
           {openCategory === c.id && (
-            <div css={AddBtnBox}>
+            <Flex row center hc gap={20}>
               <button css={todoBtnBox}>
                 <TodoIcon />
               </button>
@@ -174,18 +175,25 @@ const TodoList = () => {
                 }}
                 style={{
                   borderBottom: `solid 2px var(${c.color})`,
+                  border: 0,
+                  borderStyle: "none",
+                  borderCollapse: "collapse",
+                  width: "100%",
+                  height: "35px",
+                  backgroundColor: "transparent",
+                  outline: "none",
                 }}
               />
-            </div>
+            </Flex>
           )}
 
-          <div css={TodoListCol}>
+          <Flex col gap={14} mb={10} mt={15} width={300}>
             {selectedDateTodos
               .filter((todo) => todo.categoryId === c.id)
               .sort((a, b) => (a.isdone === b.isdone ? 0 : a.isdone ? 1 : -1))
               .map((todo) => (
-                <div css={TodoItemRow} key={todo.id}>
-                  <div>
+                <Flex row spaceBetween key={todo.id}>
+                  <Flex row gap={20}>
                     <button
                       css={todoBtnBox}
                       onClick={() => changeDoneItem(todo.id)}
@@ -216,7 +224,7 @@ const TodoList = () => {
                     >
                       {todo.text}
                     </span>
-                  </div>
+                  </Flex>
                   <Ellipsis
                     cursor="pointer"
                     onClick={() => {
@@ -224,10 +232,10 @@ const TodoList = () => {
                       setSelectedTodo(todo);
                     }}
                   />
-                </div>
+                </Flex>
               ))}
-          </div>
-        </div>
+          </Flex>
+        </Flex>
       ))}
 
       <ModalSheet
@@ -251,44 +259,6 @@ const todoBtnBox = css`
   cursor: pointer;
 `;
 
-const TodoItemRow = css`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  > div {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-  }
-`;
-
-const TodoListCol = css`
-  width: 300px;
-  margin-top: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-bottom: 10px;
-`;
-
-const AddBtnBox = css`
-  display: flex;
-  flex-direction: row;
-  text-align: center;
-  align-items: center;
-  gap: 20px;
-  input {
-    border: 0;
-    border-style: none;
-    border-collapse: collapse;
-    width: 100%;
-    height: 35px;
-    background-color: transparent;
-    outline: none;
-  }
-`;
-
 const TodoTitle = css`
   padding: 10px;
   display: flex;
@@ -303,13 +273,6 @@ const TodoTitle = css`
   text-align: center;
   font-weight: 800;
   font-size: 14px;
-`;
-
-const TodoListBox = css`
-  margin-top: 15px;
-  display: flex;
-  flex-direction: column;
-  margin-left: 20px;
 `;
 
 export default TodoList;
