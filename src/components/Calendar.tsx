@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { ChevronLeft, ChevronRight, BadgeCheck, Check } from "lucide-react";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useAtom, useAtomValue } from "jotai";
 import TodoIcon from "./TodoIconSvg";
 import "dayjs/locale/ko";
@@ -9,6 +9,9 @@ import { currentMonthAtom, selectedDateAtom } from "../store/calendar/atoms";
 import { daysCalendarAtom } from "../store/calendar/selectors";
 import { monthDoneAtom, todoListAtom } from "../store/todo/atoms";
 import { categories } from "./Todolist";
+import { useCallback } from "react";
+
+const weeks = Object.freeze(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
 
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useAtom(currentMonthAtom);
@@ -17,14 +20,51 @@ const Calendar = () => {
   const todoList = useAtomValue(todoListAtom);
   const days = useAtomValue(daysCalendarAtom);
 
-  const handlePrevMonth = () => {
-    setCurrentMonth(currentMonth.subtract(1, "month"));
-    setSelectedDate(selectedDate.subtract(1, "month").startOf("month"));
-  };
+  const handlePrevMonth = useCallback(() => {
+    setCurrentMonth((prev) => prev.subtract(1, "month"));
+    setSelectedDate((prev) => prev.subtract(1, "month").startOf("month"));
+  }, [setCurrentMonth, setSelectedDate]);
 
-  const handleNextMonth = () => {
-    setCurrentMonth(currentMonth.add(1, "month"));
-    setSelectedDate(selectedDate.add(1, "month").startOf("month"));
+  const handleNextMonth = useCallback(() => {
+    setCurrentMonth((prev) => prev.add(1, "month"));
+    setSelectedDate((prev) => prev.add(1, "month").startOf("month"));
+  }, [setCurrentMonth, setSelectedDate]);
+
+  const getCompletedCategories = useCallback(
+    (day: Dayjs) => {
+      const completedCategories: string[] = [];
+
+      todoList
+        .filter((todo) => dayjs(todo.date).isSame(day, "day") && todo.isdone)
+        .sort((a, b) => a.categoryId - b.categoryId)
+        .forEach((todo) => {
+          const category = categories.find((c) => c.id === todo.categoryId);
+          if (
+            category &&
+            !completedCategories.includes(`var(${category.color})`)
+          ) {
+            completedCategories.push(`var(${category.color})`);
+          }
+        });
+
+      return [...completedCategories];
+    },
+    [todoList]
+  );
+
+  const getDayNotDoneCount = useCallback(
+    (day: Dayjs) =>
+      todoList.filter(
+        (todo) => dayjs(todo.date).isSame(day, "day") && !todo.isdone
+      ).length,
+    [todoList]
+  );
+
+  const getDayColor = (day: Dayjs) => {
+    const now = day.day();
+    if (now === 0) return "red";
+    if (now === 6) return "blue";
+    return "white";
   };
 
   return (
@@ -41,17 +81,18 @@ const Calendar = () => {
           <ChevronLeft
             onClick={handlePrevMonth}
             width="18px"
-            cursor={"pointer"}
+            cursor="pointer"
           />
           <ChevronRight
             onClick={handleNextMonth}
             width="18px"
-            cursor={"pointer"}
+            cursor="pointer"
           />
         </div>
       </div>
+
       <div css={CalendarGrid}>
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+        {weeks.map((d) => (
           <div css={DayHeader} key={d}>
             {d}
           </div>
@@ -59,35 +100,16 @@ const Calendar = () => {
 
         {days.map((day) => {
           const isCurrentMonth = day.month() === currentMonth.month();
+          if (!isCurrentMonth) {
+            return <div key={day.toString()} />;
+          }
+
           const isToday = day.isSame(dayjs(), "day");
           const isSelected = selectedDate?.isSame(day, "day");
 
-          if (!isCurrentMonth) return <div key={day.toString()}></div>;
-
-          const completedCategories: string[] = [];
-
-          todoList
-            .filter(
-              (todo) => dayjs(todo.date).isSame(day, "day") && todo.isdone
-            )
-            .sort((a, b) => a.categoryId - b.categoryId)
-            .forEach((todo) => {
-              const category = categories.find((c) => c.id === todo.categoryId);
-              if (
-                category &&
-                !completedCategories.includes(`var(${category.color})`)
-              ) {
-                completedCategories.push(`var(${category.color})`);
-              }
-            });
-
-          const dayNotDone = todoList.filter(
-            (todo) => dayjs(todo.date).isSame(day, "day") && !todo.isdone
-          ).length;
-
-          const dayOfWeek = day.day();
-          const dayColor =
-            dayOfWeek === 0 ? "red" : dayOfWeek === 6 ? "blue" : "white";
+          const completedCategories = getCompletedCategories(day);
+          const dayNotDone = getDayNotDoneCount(day);
+          const dayColor = getDayColor(day);
 
           return (
             <div
@@ -135,8 +157,8 @@ const CalendarDateBox = css`
 
 const TodoIconBox = css`
   position: relative;
-  width: 21px;
-  height: 21px;
+  width: 22px;
+  height: 22px;
   cursor: pointer;
   span {
     position: absolute;
