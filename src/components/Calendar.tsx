@@ -32,18 +32,15 @@ const Calendar = () => {
 
   const getCompletedCategories = useCallback(
     (day: Dayjs) => {
-      const completedCategories: string[] = [];
+      const completedCategories = new Set<string>();
 
       todoList
         .filter((todo) => dayjs(todo.date).isSame(day, "day") && todo.isdone)
         .sort((a, b) => a.categoryId - b.categoryId)
-        .forEach((todo) => {
+        .map((todo) => {
           const category = categories.find((c) => c.id === todo.categoryId);
-          if (
-            category &&
-            !completedCategories.includes(`var(${category.color})`)
-          ) {
-            completedCategories.push(`var(${category.color})`);
+          if (category) {
+            completedCategories.add(`var(${category.color})`);
           }
         });
 
