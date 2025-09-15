@@ -71,11 +71,11 @@ const TodoList = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [inputValue, openCategory]);
 
-  function onChangeValue(e: React.ChangeEvent<HTMLInputElement>) {
+  const onChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
-  }
+  };
 
-  function addItem(categoryId: number) {
+  const addItem = (categoryId: number) => {
     if (inputValue.trim() !== "" && selectedDate) {
       const newTodo: Todo = {
         id: uuidv4(),
@@ -87,16 +87,16 @@ const TodoList = () => {
       setTodoList([...todoList, newTodo]);
       setInputValue("");
     }
-  }
+  };
 
-  function deleteItem(id: string) {
+  const deleteItem = (id: string) => {
     const updateTodoList = todoList.filter((todo) => todo.id !== id);
     setTodoList(updateTodoList);
     setSelectedTodo(null);
     setOpenModal(false);
-  }
+  };
 
-  function editItem(id: string) {
+  const editItem = (id: string) => {
     const todo = todoList.find((t) => t.id === id);
     if (todo) {
       deleteItem(id);
@@ -105,18 +105,19 @@ const TodoList = () => {
       setOpenCategory(todo.categoryId);
       setOpenModal(false);
     }
-  }
+  };
 
-  function changeDoneItem(id: string) {
+  const changeDoneItem = (id: string) => {
     const updatedTodoList = todoList.map((todo) =>
       todo.id === id ? { ...todo, isdone: !todo.isdone } : todo
     );
     setTodoList(updatedTodoList);
-  }
+  };
 
-  function toggleCategory(id: number) {
+  const toggleCategory = (id: number) => {
     setOpenCategory((prev) => (prev === id ? null : id));
-  }
+  };
+
   return (
     <div>
       {categories.map((c) => (
