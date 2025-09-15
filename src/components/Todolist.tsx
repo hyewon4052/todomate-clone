@@ -7,7 +7,7 @@ import ModalSheet from "./ModalSheet";
 import { selectedDateAtom } from "../store/calendar/atoms";
 import { selectedDateTodosAtom } from "../store/todo/selectors";
 import dayjs from "dayjs";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "../index.css";
 import {
@@ -45,6 +45,79 @@ const TodoList = () => {
   const setMonthDone = useSetAtom(monthDoneAtom);
   const inputBoxRef = useRef<HTMLInputElement>(null);
 
+  const addItem = useCallback(
+    (categoryId: number) => {
+      if (!inputValue.trim() || !selectedDate) return;
+
+      const newTodo: Todo = {
+        id: uuidv4(),
+        text: inputValue,
+        date: selectedDate.toDate(),
+        isdone: false,
+        categoryId,
+      };
+
+      setTodoList((prev) => [...prev, newTodo]);
+      setInputValue("");
+    },
+    [inputValue, selectedDate, setTodoList, setInputValue]
+  );
+
+  const deleteItem = useCallback(
+    (id: string) => {
+      setTodoList((prev) => prev.filter((todo) => todo.id !== id));
+      setSelectedTodo(null);
+      setOpenModal(false);
+    },
+    [setTodoList, setSelectedTodo, setOpenModal]
+  );
+
+  const editItem = useCallback(
+    (id: string) => {
+      const todo = todoList.find((t) => t.id === id);
+      if (!todo) return;
+
+      deleteItem(id);
+      setInputValue(todo.text);
+      addItem(todo.categoryId);
+      setOpenCategory(todo.categoryId);
+      setOpenModal(false);
+    },
+    [
+      todoList,
+      deleteItem,
+      setInputValue,
+      addItem,
+      setOpenCategory,
+      setOpenModal,
+    ]
+  );
+
+  const changeDoneItem = useCallback(
+    (id: string) => {
+      setTodoList((prev) =>
+        prev.map((todo) =>
+          todo.id === id ? { ...todo, isdone: !todo.isdone } : todo
+        )
+      );
+    },
+    [setTodoList]
+  );
+
+  const toggleCategory = useCallback(
+    (id: number) => {
+      setOpenCategory((prev) => (prev === id ? null : id));
+    },
+    [setOpenCategory]
+  );
+
+  const onChangeValue = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputValue(e.target.value);
+    },
+    [setInputValue]
+  );
+
   useEffect(() => {
     if (!selectedDate) return;
 
@@ -56,67 +129,18 @@ const TodoList = () => {
   }, [todoList, selectedDate, setMonthDone]);
 
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        inputBoxRef.current &&
-        !inputBoxRef.current.contains(e.target as Node)
-      ) {
-        if (inputValue.trim() !== "" && openCategory) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!inputBoxRef.current?.contains(e.target as Node)) {
+        if (inputValue.trim() && openCategory) {
           addItem(openCategory);
         }
         setOpenCategory(null);
       }
-    }
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [inputValue, openCategory]);
-
-  const onChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-
-  const addItem = (categoryId: number) => {
-    if (inputValue.trim() !== "" && selectedDate) {
-      const newTodo: Todo = {
-        id: uuidv4(),
-        text: inputValue,
-        date: selectedDate.toDate(),
-        isdone: false,
-        categoryId,
-      };
-      setTodoList([...todoList, newTodo]);
-      setInputValue("");
-    }
-  };
-
-  const deleteItem = (id: string) => {
-    const updateTodoList = todoList.filter((todo) => todo.id !== id);
-    setTodoList(updateTodoList);
-    setSelectedTodo(null);
-    setOpenModal(false);
-  };
-
-  const editItem = (id: string) => {
-    const todo = todoList.find((t) => t.id === id);
-    if (todo) {
-      deleteItem(id);
-      setInputValue(todo.text);
-      addItem(todo.categoryId);
-      setOpenCategory(todo.categoryId);
-      setOpenModal(false);
-    }
-  };
-
-  const changeDoneItem = (id: string) => {
-    const updatedTodoList = todoList.map((todo) =>
-      todo.id === id ? { ...todo, isdone: !todo.isdone } : todo
-    );
-    setTodoList(updatedTodoList);
-  };
-
-  const toggleCategory = (id: number) => {
-    setOpenCategory((prev) => (prev === id ? null : id));
-  };
+  }, [inputValue, openCategory, addItem, setOpenCategory]);
 
   return (
     <div>
