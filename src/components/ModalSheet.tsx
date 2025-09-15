@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 import { Sheet } from "react-modal-sheet";
 import { SquarePen, Trash } from "lucide-react";
 import { type Todo } from "./Todolist";
+import Flex from "./Flex";
 
 type ModalSheetProps = {
   isOpen: boolean;
@@ -38,9 +39,9 @@ const ModalSheet = ({
         <Sheet.Header />
         <Sheet.Content>
           {selectedTodo && (
-            <div css={ModalBox}>
+            <Flex col center hc>
               <span>{selectedTodo.text}</span>
-              <div css={ModalItemBox}>
+              <Flex row gap={10} mt={20}>
                 <div
                   css={ModalItem}
                   onClick={() => {
@@ -55,8 +56,8 @@ const ModalSheet = ({
                   <Trash />
                   Delete
                 </div>
-              </div>
-            </div>
+              </Flex>
+            </Flex>
           )}
         </Sheet.Content>
       </Sheet.Container>
@@ -83,22 +84,4 @@ const ModalItem = css`
   align-items: center;
   text-align: center;
   cursor: pointer;
-`;
-
-const ModalItemBox = css`
-  margin-top: 20px;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-`;
-
-const ModalBox = css`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  span {
-    font-weight: 800;
-  }
 `;
